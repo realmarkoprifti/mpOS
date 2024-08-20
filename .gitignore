@@ -1,1 +1,4 @@
 /target
+/boot/debug
+/boot/x86_64-unknown-none
+/boot/.rustc_info.json
