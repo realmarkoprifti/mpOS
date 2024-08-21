@@ -3,6 +3,7 @@
 #![feature(custom_test_frameworks)]
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "testmain"]
+#![feature(abi_x86_interrupt)]
 
 pub trait Test {
     fn run(&self) -> ();
@@ -31,6 +32,8 @@ pub fn test_runner(tests: &[&dyn Test()]) {
 mod qemu;
 mod serial;
 mod vga;
+mod interrupts;
+mod gdt;
 
 use core::panic::PanicInfo;
 
@@ -50,12 +53,28 @@ fn panic(info: &PanicInfo) -> ! {
     loop {}
 }
 
+// Used for initializing routines
+fn init() {
+    gdt::init();
+    interrupts::init_idt();
+}
+
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     println!("Hello World");
 
+    init();
+
+    // doing a page fault
+    unsafe {
+        *(0xdeadbeef as *mut u8) = 42;
+    };
+    
+
     #[cfg(test)]
     testmain();
+
+    println!("No crashes!");
 
     loop {}
 }
