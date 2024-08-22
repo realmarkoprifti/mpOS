@@ -1,7 +1,7 @@
 use crate::{gdt, panic, print, println};
 use lazy_static::lazy_static;
 use pic8259::ChainedPics;
-use spin::{mutex::Mutex, Mutex};
+use spin::mutex::Mutex;
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 
 //struct InterruptStackTable {
@@ -68,7 +68,6 @@ extern "x86-interrupt" fn timer_handler(_stack_frame: InterruptStackFrame) {
 
 extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStackFrame) {
     use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1};
-    use spin::Mutex;
     use x86_64::instructions::port::Port;
 
     lazy_static! {
