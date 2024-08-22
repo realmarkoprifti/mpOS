@@ -1,5 +1,5 @@
-const HEIGHT: usize = 25;
-const WIDTH: usize = 80;
+const HEIGHT: usize = 50;
+const WIDTH: usize = 160;
 
 use core::fmt::{Arguments, Write};
 use spin::Mutex;
@@ -115,5 +115,9 @@ macro_rules! println {
 #[doc(hidden)]
 pub fn _print(args: Arguments) {
     use core::fmt::Write;
-    VGA.lock().write_fmt(args).unwrap();
+    use x86_64::instructions::interrupts;
+
+    interrupts::without_interrupts(|| {
+        VGA.lock().write_fmt(args).unwrap();
+    });
 }
